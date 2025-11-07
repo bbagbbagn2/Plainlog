@@ -19,7 +19,10 @@ export default function Home() {
     <ul>
       {posts.map((post) => (
         <li key={post.id}>
-          {post.title} - {post.post_tags.map((tag) => tag.tags.name).join(", ")}
+          <strong>{post.title}</strong>
+          {post.post_tags.length > 0
+            ? post.post_tags.map((tag) => tag.tags?.name).join(", ")
+            : "(태그 없음)"}
         </li>
       ))}
     </ul>

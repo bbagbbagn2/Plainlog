@@ -47,21 +47,24 @@ export async function createPost(post: {
   if (post.tags && post.tags.length > 0) {
     for (const tagName of post.tags) {
       // 태그 존재 여부 확인 후 없으면 추가
-      const { data: tagData } = await supabase
+      const { data: existingTag, error: findError } = await supabase
         .from("tags")
         .select("*")
         .eq("name", tagName)
-        .single();
+        .maybeSingle();
+
       let tagId: number;
-      if (!tagData) {
-        const { data: newTag } = await supabase
+      if (!existingTag || findError) {
+        const { data: newTag, error: insertError } = await supabase
           .from("tags")
           .insert([{ name: tagName }])
           .select()
           .single();
+
+        if (insertError) throw insertError;
         tagId = newTag.id;
       } else {
-        tagId = tagData.id;
+        tagId = existingTag.id;
       }
 
       // post_tags 테이블에 연결
