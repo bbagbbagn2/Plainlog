@@ -1,15 +1,21 @@
-// app/write/page.tsx
 'use client';
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Send, X } from 'lucide-react';
-import { supabase } from '@/src/lib/supabase';
-import { PostFormData } from '@/src/types';
 
-// Markdown 에디터를 동적으로 로드 (SSR 방지)
+import { Save, Send, X, FolderOpen, Clock } from 'lucide-react';
+
+import { supabase } from '@/lib/supabase';
+import { PostFormData } from '@/types';
+
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+
+interface Draft {
+  id: number;
+  content: string;
+  created_at: string;
+}
 
 export default function WritePage() {
   const router = useRouter();
@@ -23,17 +29,80 @@ export default function WritePage() {
   const [tagInput, setTagInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [loadingDrafts, setLoadingDrafts] = useState(false);
 
-  // 자동 저장 (5초마다)
+  // 자동 저장
   useEffect(() => {
     if (!formData.content) return;
 
     const autoSave = setTimeout(() => {
       saveDraft();
-    }, 5000);
+    }, 60000);
 
     return () => clearTimeout(autoSave);
   }, [formData.content]);
+
+  // 임시저장 목록 불러오기
+  const loadDrafts = async () => {
+    setLoadingDrafts(true);
+    try {
+      const { data, error } = await supabase
+        .from('drafts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      setDrafts(data || []);
+    } catch (err) {
+      console.error('Error loading drafts:', err);
+      alert('임시저장 목록을 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setLoadingDrafts(false);
+    }
+  };
+
+  // 임시저장 모달 열기
+  const handleOpenDrafts = () => {
+    setShowDrafts(true);
+    loadDrafts();
+  };
+
+  // 임시저장 불러오기
+  const handleLoadDraft = (draft: Draft) => {
+    try {
+      const parsedData = JSON.parse(draft.content);
+      setFormData(parsedData);
+      setShowDrafts(false);
+      alert('임시저장된 글을 불러왔습니다.');
+    } catch (err) {
+      console.error('Error parsing draft:', err);
+      alert('임시저장 데이터를 불러오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 임시저장 삭제
+  const handleDeleteDraft = async (draftId: number) => {
+    if (!confirm('이 임시저장을 삭제하시겠습니까?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('drafts')
+        .delete()
+        .eq('id', draftId);
+
+      if (error) throw error;
+
+      // 목록 새로고침
+      loadDrafts();
+      alert('삭제되었습니다.');
+    } catch (err) {
+      console.error('Error deleting draft:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
 
   const saveDraft = async () => {
     try {
@@ -55,6 +124,36 @@ export default function WritePage() {
       .replace(/[^a-z0-9가-힣]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
+  };
+
+  // 슬러그 중복 방지: 기존에 같은 슬러그가 있으면 접미사 숫자를 붙여 반환
+  const getUniqueSlug = async (baseTitle: string, publish: boolean) => {
+    const base = generateSlug(baseTitle);
+    let candidate = base;
+
+    for (let i = 0; i < 10; i++) {
+      try {
+        let query = supabase
+          .from('posts')
+          .select('id')
+          .eq('slug', candidate)
+          .limit(1);
+        if (publish) query = query.eq('published', true);
+
+        const { data } = await query;
+
+        if (!data || (Array.isArray(data) && data.length === 0)) {
+          return candidate;
+        }
+      } catch (e) {
+        console.error('Error checking slug existence:', e);
+        return candidate;
+      }
+
+      candidate = `${base}-${i + 1}`;
+    }
+
+    return `${base}-${Date.now().toString(36)}`;
   };
 
   const handleAddTag = () => {
@@ -83,7 +182,7 @@ export default function WritePage() {
     setLoading(true);
 
     try {
-      const slug = generateSlug(formData.title);
+      const slug = await getUniqueSlug(formData.title, publish);
       const excerpt = formData.content.slice(0, 150).replace(/[#*`]/g, '');
 
       const { data, error } = await supabase
@@ -103,9 +202,24 @@ export default function WritePage() {
 
       alert(publish ? '글이 발행되었습니다!' : '임시 저장되었습니다.');
       router.push(publish ? `/posts/${slug}` : '/');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving post:', err);
-      alert('저장 중 오류가 발생했습니다.');
+      try {
+        console.error(
+          'Error (stringified):',
+          JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
+        );
+      } catch (e) {
+        console.error('Error stringifying error object failed', e);
+      }
+
+      const message =
+        err?.message ??
+        err?.error ??
+        err?.statusText ??
+        err?.status ??
+        JSON.stringify(err);
+      alert(`저장 중 오류가 발생했습니다: ${message}`);
     } finally {
       setLoading(false);
     }
@@ -123,6 +237,14 @@ export default function WritePage() {
                 마지막 저장: {lastSaved.toLocaleTimeString()}
               </span>
             )}
+            {/* 임시저장 불러오기 버튼 */}
+            <button
+              onClick={handleOpenDrafts}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition"
+            >
+              <FolderOpen size={18} />
+              임시저장 목록
+            </button>
             <button
               onClick={() => router.push('/')}
               className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
@@ -147,6 +269,95 @@ export default function WritePage() {
             </button>
           </div>
         </div>
+
+        {/* 임시저장 모달 */}
+        {showDrafts && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold">임시저장 목록</h2>
+                <button
+                  onClick={() => setShowDrafts(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {loadingDrafts ? (
+                <div className="text-center py-8 text-gray-500">
+                  불러오는 중...
+                </div>
+              ) : drafts.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  임시저장된 글이 없습니다.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {drafts.map((draft) => {
+                    let parsedData;
+                    try {
+                      parsedData = JSON.parse(draft.content);
+                    } catch {
+                      return null;
+                    }
+
+                    return (
+                      <div
+                        key={draft.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:border-[#A855F7] transition"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div
+                            className="flex-1 cursor-pointer"
+                            onClick={() => handleLoadDraft(draft)}
+                          >
+                            <h3 className="font-bold text-lg mb-1">
+                              {parsedData.title || '제목 없음'}
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                              {parsedData.content?.slice(0, 100) || '내용 없음'}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <Clock size={14} />
+                              <span>
+                                {new Date(draft.created_at).toLocaleString(
+                                  'ko-KR',
+                                )}
+                              </span>
+                              {parsedData.category && (
+                                <span className="px-2 py-0.5 bg-[#EDE9FE] text-[#A855F7] rounded">
+                                  {parsedData.category}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleLoadDraft(draft)}
+                              className="px-3 py-1.5 bg-[#A855F7] text-white text-sm rounded hover:bg-[#9333EA] transition"
+                            >
+                              불러오기
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteDraft(draft.id);
+                              }}
+                              className="px-3 py-1.5 bg-red-100 text-red-600 text-sm rounded hover:bg-red-200 transition"
+                            >
+                              삭제
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         <div className="space-y-6">

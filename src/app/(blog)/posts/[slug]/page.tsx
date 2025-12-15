@@ -1,23 +1,27 @@
-// app/posts/[slug]/page.tsx
-
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { format } from 'date-fns';
+import { Calendar, Tag, Edit, ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github-dark.css';
+
 import { supabase } from '@/lib/supabase';
 import { Post } from '@/types';
-import { notFound } from 'next/navigation';
-import { format } from 'date-fns';
-import { Calendar, Tag, Edit, ArrowLeft } from 'lucide-react';
+
+import 'highlight.js/styles/github-dark.css';
 
 async function getPost(slug: string): Promise<Post | null> {
+  const decodedSlug =
+    slug && slug.includes('%') ? decodeURIComponent(slug) : slug;
+
   const { data, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('slug', slug)
+    .eq('slug', decodedSlug)
     .eq('published', true)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Error fetching post:', error);
@@ -27,12 +31,9 @@ async function getPost(slug: string): Promise<Post | null> {
   return data;
 }
 
-export default async function PostDetail({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const post = await getPost(params.slug);
+export default async function PostDetail({ params }: { params: any }) {
+  const { slug } = (await params) as { slug: string };
+  const post = await getPost(slug);
 
   if (!post) {
     notFound();

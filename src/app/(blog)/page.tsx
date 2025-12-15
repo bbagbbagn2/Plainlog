@@ -1,19 +1,25 @@
-// app/page.tsx
-
 import Link from 'next/link';
+
 import { supabase } from '@/lib/supabase';
 import { Post } from '@/types';
-import PostCard from '@/components/post/PostCard';
-import SearchBar from '@/components/ui/SearchBar';
-import CategoryFilter from '@/components/ui/CategoryFilter';
 
-async function getPosts(): Promise<Post[]> {
-  const { data, error } = await supabase
+import PostCard from '@/components/post/PostCard';
+import CategoryFilter from '@/components/ui/CategoryFilter';
+import SearchBar from '@/components/ui/SearchBar';
+
+async function getPosts(category?: string): Promise<Post[]> {
+  let query = supabase
     .from('posts')
     .select('*')
     .eq('published', true)
     .order('created_at', { ascending: false })
     .limit(10);
+
+  if (category) {
+    query = query.eq('category', category);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching posts:', error);
@@ -39,15 +45,20 @@ async function getCategories(): Promise<string[]> {
   return categories as string[];
 }
 
-export default async function Home() {
-  const posts = await getPosts();
+export default async function Home({ searchParams }: { searchParams?: any }) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const categoryParam = resolvedSearchParams?.category;
+  const category =
+    typeof categoryParam === 'string' ? categoryParam : undefined;
+
+  const posts = await getPosts(category);
   const categories = await getCategories();
 
   return (
     <main className="min-h-screen bg-[#FAFAF9]">
       {/* Hero Section */}
       <section className="py-20 px-4 text-center border-b border-gray-200">
-        <h1 className="text-5xl font-bold text-[#1E1E1E] mb-4">개발 블로그</h1>
+        <h1 className="text-5xl font-bold text-[#1E1E1E] mb-4">Plainlog</h1>
         <p className="text-xl text-gray-600 mb-8">
           TIL, 회고, 학습 기록을 공유합니다
         </p>
