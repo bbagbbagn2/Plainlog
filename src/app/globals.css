@@ -1,1 +1,251 @@
 @import 'tailwindcss';
+
+@theme {
+  /* 메인 컬러 팔레트 */
+  --color-primary: #a47764;
+  --color-primary-hover: #8b6752;
+  --color-primary-light: #c4a494;
+  --color-secondary: #f5ede8;
+  --color-background: #ffffff;
+  --color-text: #000000;
+  --color-text-light: #494949;
+
+  /* 그레이스케일 */
+  --color-gray-50: #f9f8f7;
+  --color-gray-100: #f0ede9;
+  --color-gray-200: #e1ddd7;
+  --color-gray-300: #c9c3bc;
+  --color-gray-400: #a39a91;
+  --color-gray-500: #7d7469;
+  --color-gray-600: #5c5248;
+  --color-gray-700: #403a33;
+  --color-gray-800: #2c2620;
+  --color-gray-900: #1a1612;
+
+  /* 시맨틱 컬러 */
+  --color-success: #6b9e78;
+  --color-error: #c76d6d;
+  --color-warning: #d4a574;
+  --color-info: #7b92a8;
+
+  /* 폰트 */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+
+  /* 간격 */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --spacing-2xl: 4rem;
+
+  /* 반경 */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* 그림자 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+/* 기본 스타일 초기화 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 선택 영역 스타일 */
+::selection {
+  background-color: var(--color-primary-light);
+  color: white;
+}
+
+/* 마크다운 스타일 */
+.prose {
+  @apply max-w-none text-[var(--color-text)];
+}
+
+.prose h1 {
+  @apply text-3xl font-bold text-[var(--color-text)] mt-8 mb-4 leading-tight;
+}
+
+.prose h2 {
+  @apply text-2xl font-bold text-[var(--color-text)] mt-6 mb-3 leading-tight;
+}
+
+.prose h3 {
+  @apply text-xl font-bold text-[var(--color-text)] mt-5 mb-2 leading-tight;
+}
+
+.prose h4 {
+  @apply text-lg font-semibold text-[var(--color-text)] mt-4 mb-2;
+}
+
+.prose p {
+  @apply text-[var(--color-text-light)] leading-relaxed mb-4;
+}
+
+.prose a {
+  @apply text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] 
+         underline decoration-2 underline-offset-2 transition-colors;
+}
+
+.prose strong {
+  @apply font-semibold text-[var(--color-text)];
+}
+
+.prose em {
+  @apply italic;
+}
+
+.prose code {
+  @apply px-1.5 py-0.5 bg-[var(--color-gray-100)] text-[var(--color-primary)] 
+         rounded text-sm font-mono;
+}
+
+.prose pre {
+  @apply rounded-lg overflow-x-auto my-4 bg-[var(--color-gray-800)] p-4;
+}
+
+.prose pre code {
+  @apply px-0 py-0 bg-transparent text-gray-100;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-[var(--color-primary)] pl-4 py-2 my-4 
+         bg-[var(--color-secondary)] italic text-[var(--color-text-light)];
+}
+
+.prose ul,
+.prose ol {
+  @apply ml-6 mb-4 space-y-2;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose li {
+  @apply text-[var(--color-text-light)];
+}
+
+.prose img {
+  @apply rounded-lg my-4 shadow-md;
+}
+
+.prose hr {
+  @apply my-8 border-t-2 border-[var(--color-gray-200)];
+}
+
+.prose table {
+  @apply w-full my-4 border-collapse;
+}
+
+.prose th,
+.prose td {
+  @apply border border-[var(--color-gray-300)] px-4 py-2 text-left;
+}
+
+.prose th {
+  @apply bg-[var(--color-secondary)] font-semibold text-[var(--color-text)];
+}
+
+.prose td {
+  @apply text-[var(--color-text-light)];
+}
+
+/* 커스텀 유틸리티 클래스 */
+@utility btn-primary {
+  @apply px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg 
+         hover:bg-[var(--color-primary-hover)] transition-all duration-200
+         font-medium shadow-sm hover:shadow-md disabled:opacity-50 
+         disabled:cursor-not-allowed;
+}
+
+@utility btn-secondary {
+  @apply px-4 py-2 bg-[var(--color-secondary)] text-[var(--color-primary)] 
+         rounded-lg hover:bg-[var(--color-primary-light)] hover:text-white
+         transition-all duration-200 font-medium;
+}
+
+@utility btn-ghost {
+  @apply px-4 py-2 text-[var(--color-text-light)] hover:text-[var(--color-primary)]
+         hover:bg-[var(--color-gray-50)] rounded-lg transition-all duration-200;
+}
+
+@utility card {
+  @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow 
+         border border-[var(--color-gray-200)] overflow-hidden;
+}
+
+@utility input-base {
+  @apply px-4 py-2 border border-[var(--color-gray-300)] rounded-lg 
+         focus:border-[var(--color-primary)] focus:ring-2 
+         focus:ring-[var(--color-primary)]/20 outline-none 
+         transition-all duration-200 bg-white;
+}
+
+@utility badge {
+  @apply inline-block px-3 py-1 bg-[var(--color-secondary)] 
+         text-[var(--color-primary)] text-sm rounded-full font-medium;
+}
+
+@utility tag {
+  @apply inline-flex items-center gap-1 px-2 py-1 
+         bg-[var(--color-gray-100)] text-[var(--color-text-light)] 
+         text-xs rounded hover:bg-[var(--color-gray-200)] transition-colors;
+}
+
+/* 로딩 애니메이션 */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 페이드 인 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 포커스 가시성 향상 */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
