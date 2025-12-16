@@ -156,3 +156,13 @@ export const storage = {
     }
   },
 };
+
+export function getFirstSentence(text: string) {
+  if (!text) return '';
+
+  const trimmed = text.trim();
+
+  const match = trimmed.match(/^(.+?[가-힣]\.)/);
+
+  return match ? match[1] : trimmed;
+}

@@ -1,7 +1,11 @@
 import Link from 'next/link';
 import { Calendar, Tag, Clock } from 'lucide-react';
 import { Post } from '@/types';
-import { formatDate, calculateReadingTime } from '@/lib/utils';
+import {
+  formatDate,
+  calculateReadingTime,
+  getFirstSentence,
+} from '@/lib/utils';
 
 interface PostCardProps {
   post: Post;
@@ -9,6 +13,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const readingTime = calculateReadingTime(post.content);
+  const previewExcerpt = post.excerpt || post.content;
 
   return (
     <Link href={`/posts/${post.slug}`}>
@@ -23,8 +28,8 @@ export function PostCard({ post }: PostCardProps) {
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="text-[var(--color-text-light)] mb-4 line-clamp-3 leading-relaxed">
-            {post.excerpt}
+          <p className="text-[var(--color-text-light)] mb-4 leading-relaxed">
+            {getFirstSentence(previewExcerpt)}
           </p>
         )}
 

@@ -70,7 +70,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-2 px-4 py-12">
         {/* Category Filter */}
         <div className="mb-8">
           <CategoryFilter categories={categories} />
