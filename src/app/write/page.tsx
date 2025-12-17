@@ -151,8 +151,15 @@ export default function WritePage() {
 
       if (error) throw error;
 
-      alert(publish ? '글이 발행되었습니다!' : '임시 저장되었습니다.');
-      router.push(publish ? `/posts/${slug}` : '/');
+      if (publish) {
+        alert('글이 발행되었습니다!');
+        router.push(`/posts/${slug}`);
+        router.refresh();
+      } else {
+        alert('임시 저장되었습니다.');
+        router.push('/posts');
+        router.refresh();
+      }
     } catch (err) {
       console.error('Error saving post:', err);
       alert('저장 중 오류가 발생했습니다.');

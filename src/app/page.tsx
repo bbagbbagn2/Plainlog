@@ -70,7 +70,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-2 px-4 py-12">
+      <div className="mx-2 px-4 py-12">
         {/* Category Filter */}
         <div className="mb-8">
           <CategoryFilter categories={categories} />
@@ -103,7 +103,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Featured Section */}
       {posts.length > 0 && (
         <section className="bg-color-gray-50 py-16 px-4 mt-20 border-t border-gray-200">
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto">
             <h2 className="text-3xl font-bold text-black mb-8 text-center">
               최근 작성한 글
             </h2>
