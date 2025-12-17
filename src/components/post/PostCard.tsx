@@ -17,24 +17,24 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Link href={`/posts/${post.slug}`}>
-      <article className="card p-6 h-full hover:border-[var(--color-primary)] transition-all duration-200 cursor-pointer animate-fade-in">
+      <article className="card p-6 h-full flex flex-col gap-3 items-start justify-between hover:border-[var(--color-primary)] transition-all duration-200 cursor-pointer animate-fade-in">
         {/* Category Badge */}
-        {post.category && <span className="badge mb-3">{post.category}</span>}
+        {post.category && <span className="badge">{post.category}</span>}
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-[var(--color-text)] mb-3 line-clamp-2 hover:text-[var(--color-primary)] transition-colors">
+        <h2 className="text-xl font-bold text-[var(--color-text)] line-clamp-2 hover:text-[var(--color-primary)] transition-colors">
           {post.title}
         </h2>
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="text-[var(--color-text-light)] mb-4 leading-relaxed">
+          <p className="text-[var(--color-text-light)] leading-relaxed">
             {getFirstSentence(previewExcerpt)}
           </p>
         )}
 
         {/* Meta Info */}
-        <div className="flex items-center gap-4 text-sm text-[var(--color-gray-500)] mb-3">
+        <div className="flex items-center gap-4 text-sm text-[var(--color-gray-500)]">
           <div className="flex items-center gap-1">
             <Calendar size={16} />
             <time dateTime={post.created_at}>

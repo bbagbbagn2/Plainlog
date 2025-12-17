@@ -1,12 +1,12 @@
 // app/posts/[slug]/page.tsx
-import { supabase } from '@/lib/supabase';
-import { Post } from '@/types';
-import { notFound } from 'next/navigation';
-import { PostContent } from '@/components/post/PostContent';
-import { formatDate, calculateReadingTime, getRelativeTime } from '@/lib/utils';
-import { Calendar, Tag, Edit, ArrowLeft, Clock } from 'lucide-react';
-import Link from 'next/link';
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Calendar, Tag, Edit, ArrowLeft, Clock } from 'lucide-react';
+import { PostContent } from '@/components/post/PostContent';
+import { supabase } from '@/lib/supabase';
+import { formatDate, calculateReadingTime, getRelativeTime } from '@/lib/utils';
+import { Post } from '@/types';
 
 interface PostDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -86,7 +86,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
           {post.category && <span className="badge mb-4">{post.category}</span>}
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-text mb-6 leading-tight">
+          <h1 className="text-3xl md:text-5xl font-bold text-text mb-6 leading-tight">
             {post.title}
           </h1>
 
@@ -108,7 +108,7 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
 
             {isUpdated && (
               <>
-                <span className="text-gray-300">•</span>
+                <span className="hidden text-gray-300 md:block">•</span>
                 <span className="text-gray-400">
                   {getRelativeTime(post.updated_at)} 수정됨
                 </span>
@@ -120,14 +120,13 @@ export default async function PostDetailPage({ params }: PostDetailPageProps) {
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
-                <Link
+                <div
                   key={tag}
-                  href={`/tag/${tag}`}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 hover:bg-secondary text-text-light hover:text-primary text-sm rounded-full transition-colors"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-text-light text-sm rounded-full"
                 >
                   <Tag size={14} />
                   {tag}
-                </Link>
+                </div>
               ))}
             </div>
           )}

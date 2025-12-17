@@ -140,27 +140,6 @@ export default function EditPage() {
               글 수정
             </h1>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" onClick={() => router.push('/')}>
-              취소
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => handleSubmit(false)}
-              isLoading={saving}
-              icon={<Save size={18} />}
-            >
-              임시저장
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => handleSubmit(true)}
-              isLoading={saving}
-              icon={<Send size={18} />}
-            >
-              발행
-            </Button>
-          </div>
         </div>
 
         {/* Form */}
@@ -238,6 +217,24 @@ export default function EditPage() {
               height={500}
               preview="live"
             />
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => handleSubmit(false)}
+              isLoading={saving}
+              icon={<Save size={18} />}
+            >
+              임시저장
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => handleSubmit(true)}
+              isLoading={saving}
+              icon={<Send size={18} />}
+            >
+              발행
+            </Button>
           </div>
         </div>
       </div>

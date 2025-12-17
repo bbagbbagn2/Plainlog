@@ -177,7 +177,7 @@ export default function WritePage() {
               글 작성
             </h1>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap justify-end">
             {lastSaved && (
               <span className="text-sm text-[var(--color-gray-500)]">
                 마지막 저장: {lastSaved.toLocaleTimeString()}
@@ -190,32 +190,13 @@ export default function WritePage() {
             >
               임시저장 목록
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/')}>
-              취소
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleSaveDraft}
-              isLoading={savingDraft}
-              icon={<Save size={18} />}
-            >
-              임시저장
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => handleSubmit(true)}
-              isLoading={loading}
-              icon={<Send size={18} />}
-            >
-              발행
-            </Button>
           </div>
         </div>
 
         {/* Draft Modal */}
         {showDrafts && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-4 max-w-4xl w-full max-h-[80vh] overflow-y-auto mx-3">
+            <div className="bg-white rounded-lg p-4 max-w-4xl w-full max-h-[80vh] overflow-y-auto mx-3 md:mx-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-text">임시저장 목록</h2>
                 <button
@@ -376,6 +357,24 @@ export default function WritePage() {
               height={500}
               preview="live"
             />
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button
+              variant="secondary"
+              onClick={handleSaveDraft}
+              isLoading={savingDraft}
+              icon={<Save size={18} />}
+            >
+              임시저장
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => handleSubmit(true)}
+              isLoading={loading}
+              icon={<Send size={18} />}
+            >
+              발행
+            </Button>
           </div>
         </div>
       </div>

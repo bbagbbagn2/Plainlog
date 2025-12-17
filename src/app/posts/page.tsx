@@ -2,27 +2,13 @@
 import { supabase } from '@/lib/supabase';
 import { Post } from '@/types';
 import { PostList } from '@/components/post/PostList';
-import { Search } from 'lucide-react';
 
-interface PostsPageProps {
-  searchParams: { search?: string };
-}
-
-async function getPosts(searchQuery?: string): Promise<Post[]> {
+async function getPosts(): Promise<Post[]> {
   let query = supabase
     .from('posts')
     .select('*')
     .eq('published', true)
     .order('created_at', { ascending: false });
-
-  // 검색 쿼리가 있으면 필터링
-  if (searchQuery && searchQuery.trim().length >= 2) {
-    const keyword = searchQuery.trim();
-
-    query = query.or(
-      `title.ilike.%${keyword}%,excerpt.ilike.%${keyword}%,tags.cs.{${keyword}}`,
-    );
-  }
 
   const { data, error } = await query;
 
@@ -34,10 +20,8 @@ async function getPosts(searchQuery?: string): Promise<Post[]> {
   return data ?? [];
 }
 
-export default async function PostsPage({ searchParams }: PostsPageProps) {
-  console.log('searchParams:', searchParams);
-
-  const posts = await getPosts(searchParams.search);
+export default async function PostsPage() {
+  const posts = await getPosts();
 
   return (
     <div className="min-h-screen bg-[var(--color-background)]">
@@ -54,14 +38,7 @@ export default async function PostsPage({ searchParams }: PostsPageProps) {
         </div>
 
         {/* Posts */}
-        <PostList
-          posts={posts}
-          emptyMessage={
-            searchParams.search
-              ? `"${searchParams.search}" 검색 결과가 없습니다.`
-              : '아직 작성된 글이 없습니다.'
-          }
-        />
+        <PostList posts={posts} emptyMessage={'아직 작성된 글이 없습니다.'} />
       </div>
     </div>
   );

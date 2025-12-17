@@ -43,8 +43,8 @@ export function Header() {
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
                     isActive(item.href)
-                      ? 'bg-secondary text-primary font-medium'
-                      : 'text-black hover:text-primary hover:bg-gray-50',
+                      ? 'bg-gray-100 text-text font-medium'
+                      : 'text-text-light hover:text-text hover:bg-gray-50',
                   )}
                 >
                   <Icon size={18} />
@@ -57,7 +57,7 @@ export function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-[var(--color-text-light)] hover:text-[var(--color-primary)] transition-colors"
+            className="md:hidden p-2 text-[var(--color-text-light)] hover:text-[var(--color-text)] transition-colors"
             aria-label="메뉴"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -78,7 +78,7 @@ export function Header() {
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
                       isActive(item.href)
-                        ? 'bg-[var(--color-secondary)] text-[var(--color-primary)] font-medium'
+                        ? 'bg-[var(--color-gray-100)] text-[var(--color-text)] font-medium'
                         : 'text-[var(--color-text-light)] hover:bg-[var(--color-gray-50)]',
                     )}
                   >

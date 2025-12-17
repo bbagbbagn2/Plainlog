@@ -60,10 +60,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* Hero Section */}
       <section className="py-20 px-4 border-b border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-black mb-4 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-black mb-4 leading-tight">
             개발을 기록하다
           </h1>
-          <p className="text-xl text-text-light mb-4">
+          <p className="text-lg md:text-xl text-text-light mb-4">
             TIL, 회고, 학습 내용을 정리하고 공유합니다
           </p>
         </div>
@@ -91,7 +91,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="text-center mt-12">
             <Link
               href="/posts"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-color-primary text-white rounded-lg hover:bg-color-primary-hover transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-hover transition-all duration-200 font-medium shadow-md hover:shadow-lg"
             >
               전체 글 보기
               <ArrowRight size={20} />
@@ -112,7 +112,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <Link
                   key={post.id}
                   href={`/posts/${post.slug}`}
-                  className="bg-white p-6 rounded-lg hover:shadow-md transition-shadow border border-color-gray-200"
+                  className="bg-white p-6 rounded-lg hover:shadow-md transition-shadow border border-gray-200"
                 >
                   <h3 className="font-bold text-lg text-[var(--color-text)] mb-2 line-clamp-2">
                     {post.title}
